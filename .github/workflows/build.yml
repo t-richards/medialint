@@ -1,0 +1,32 @@
+name: Build
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  clang:
+    name: Clang
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: write
+
+    steps:
+      - name: Install system deps
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libavcodec-dev libavformat-dev libavutil-dev libglib2.0-dev clang-tools
+
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Build with scan-build
+        run: scan-build make dist
+
+      - name: Upload binary
+        uses: actions/upload-artifact@v4
+        with:
+          name: medialint
+          path: bin/medialint
+          retention-days: 14

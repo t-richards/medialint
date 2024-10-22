@@ -1,0 +1,6 @@
+# binaries
+bin/*
+!bin/.gitkeep
+
+# dev junk
+.vscode

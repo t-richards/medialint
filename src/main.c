@@ -14,7 +14,7 @@
 #include "report.h"
 
 int total_files = 0;
-int files_scanned = 0;
+gint files_scanned = 0;
 
 // Thread pool for parallel processing.
 GThreadPool *pool = NULL;
@@ -101,7 +101,7 @@ void lint_media_file(char *file_path, const void *_unused)
         return;
     }
 
-    files_scanned++;
+    g_atomic_int_inc(&files_scanned);
 
     int subtitle_count = 0;
     for (int i = 0; i < ifmt_ctx->nb_streams; i++)
@@ -130,7 +130,7 @@ void lint_media_file(char *file_path, const void *_unused)
             }
 
             // Check video codec.
-            const char *codec_name;
+            const char *codec_name = NULL;
             switch (codecpar->codec_id)
             {
             case AV_CODEC_ID_H264:

@@ -65,7 +65,6 @@ int reporting_context_print(ReportingContext *ctx)
     for (GList *key = keys; key != NULL; key = key->next)
     {
         const char *path_key = key->data;
-        puts(path_key);
 
         GQueue *report_queue = g_hash_table_lookup(ctx->reports, path_key);
         g_queue_sort(report_queue, (GCompareDataFunc)report_compare, NULL);
@@ -73,10 +72,8 @@ int reporting_context_print(ReportingContext *ctx)
         for (GList *report = report_queue->head; report != NULL; report = report->next)
         {
             struct Report *r = report->data;
-            printf("    %s: %s\n", r->report_class, r->report_message);
+            printf("%s: %s: %s\n", path_key, r->report_class, r->report_message);
         }
-
-        puts("");
     }
 
     g_free(keys);

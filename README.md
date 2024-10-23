@@ -32,10 +32,6 @@ bin/medialint <dir>
 
 ## Constraints
 
-- On memory safety:
-
-  While `medialint` does generally care about memory safety, we do not particularly care that all allocations from lint reports are freed at program exit.
-
 - Platform limitations:
 
   `medialint` currently only supports running on Unix-like platforms. The following set of things must be addressed before it works on other platforms.

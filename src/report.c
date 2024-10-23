@@ -7,11 +7,28 @@ typedef struct Report
     char *report_message;
 } Report;
 
+
+// Each report has copied strings.
+void report_free(gpointer data)
+{
+    struct Report *report = data;
+    g_free(report->report_class);
+    g_free(report->report_message);
+    g_free(report);
+}
+
+// Hash table items are queues of reports.
+void item_free(gpointer data)
+{
+    GQueue *queue = data;
+    g_queue_free_full(queue, report_free);
+}
+
 ReportingContext *reporting_context_new()
 {
     ReportingContext *ctx = g_new0(ReportingContext, 1);
     g_mutex_init(&ctx->mutex);
-    ctx->reports = g_hash_table_new_full(g_str_hash, g_str_equal, g_free, g_free);
+    ctx->reports = g_hash_table_new_full(g_str_hash, g_str_equal, g_free, item_free);
     return ctx;
 }
 
@@ -76,7 +93,7 @@ int reporting_context_print(ReportingContext *ctx)
         }
     }
 
-    g_free(keys);
+    g_list_free(keys);
 
     g_mutex_unlock(&ctx->mutex);
 

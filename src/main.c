@@ -83,6 +83,9 @@ void lint_media_file(char *file_path, const void *_unused)
         }
     }
 
+    // Done with path parts.
+    g_strfreev(parts);
+
     AVFormatContext *ifmt_ctx = avformat_alloc_context();
     ifmt_ctx->flags |= AVFMT_FLAG_NOBUFFER;
     ifmt_ctx->flags |= AVFMT_FLAG_NOFILLIN;
@@ -196,6 +199,17 @@ void init()
     tv_naming_regex = g_regex_new("S\\d{2}E\\d{2}", flags, 0, NULL);
 }
 
+void cleanup()
+{
+    // Free regular expressions.
+    g_regex_unref(forbidden_chars_regex);
+    g_regex_unref(movie_year_regex);
+    g_regex_unref(tv_naming_regex);
+
+    // Free reporting context.
+    reporting_context_free(reporting_context);
+}
+
 int main(int argc, char *argv[])
 {
     if (argc != 2)
@@ -232,6 +246,7 @@ int main(int argc, char *argv[])
 
     g_timer_stop(timer);
     double elapsed = g_timer_elapsed(timer, NULL);
+    g_timer_destroy(timer);
 
     puts("");
     int report_file_count = reporting_context_print(reporting_context);
@@ -240,4 +255,8 @@ int main(int argc, char *argv[])
     printf("Total:     %d\n", total_files);
     printf("Processed: %d\n", files_scanned);
     printf("Errors:    %d\n", report_file_count);
+
+    // Be nice and clean up.
+    free(path);
+    cleanup();
 }

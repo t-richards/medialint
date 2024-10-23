@@ -32,7 +32,6 @@ ReportingContext *reporting_context_new()
     return ctx;
 }
 
-// lol
 void reporting_context_free(ReportingContext *ctx)
 {
     g_hash_table_destroy(ctx->reports);

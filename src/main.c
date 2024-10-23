@@ -46,6 +46,7 @@ const char *CLASS_VIDEO_BITRATE = "Video/Bitrate";
 const char *CLASS_VIDEO_CODEC = "Video/Codec";
 const char *CLASS_VIDEO_RESOLUTION = "Video/Resolution";
 
+// Runs all linters on a single media file.
 void lint_media_file(char *file_path, const void *_unused)
 {
     // Processing one file now.

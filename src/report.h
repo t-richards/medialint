@@ -1,6 +1,5 @@
 #pragma once
 
-#include <glib-unix.h>
 #include <glib.h>
 
 // ReportingContext is a thread-safe context for storing linter messages.
@@ -11,7 +10,16 @@ typedef struct ReportingContext
     GHashTable *reports;
 } ReportingContext;
 
+// Creates a new ReportingContext for storing linter messages.
 ReportingContext *reporting_context_new();
-void reporting_context_free(ReportingContext *ctx);
+
+// Adds a new lint message to the context.
 void reporting_context_add(ReportingContext *ctx, const char *path_key, const char *report_class, const char *report_message);
+
+// Prints all lint messages for display.
+//
+// @return The number of files that produced lint messages.
 int reporting_context_print(ReportingContext *ctx);
+
+// Frees the ReportingContext.
+void reporting_context_free(ReportingContext *ctx);

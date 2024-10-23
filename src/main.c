@@ -192,11 +192,18 @@ void init()
     // Start thread pool.
     pool = g_thread_pool_new((GFunc)lint_media_file, NULL, g_get_num_processors(), TRUE, NULL);
 
-    // Compile regular expressions.
+    // Create regular expressions.
     GRegexCompileFlags flags = G_REGEX_CASELESS | G_REGEX_OPTIMIZE;
     forbidden_chars_regex = g_regex_new("[<>:\"/\\|?*]", flags, 0, NULL);
     movie_year_regex = g_regex_new("\\(\\d{4}\\)", flags, 0, NULL);
     tv_naming_regex = g_regex_new("S\\d{2}E\\d{2}", flags, 0, NULL);
+
+    // Compile regular expressions.
+    // GLib invokes the PCRE2 JIT compiler during the first use of a regular expression.
+    // This operation is not thread-safe and it can leak allocations unless we do it ahead of time.
+    g_regex_match(forbidden_chars_regex, "", 0, NULL);
+    g_regex_match(movie_year_regex, "", 0, NULL);
+    g_regex_match(tv_naming_regex, "", 0, NULL);
 }
 
 void cleanup()

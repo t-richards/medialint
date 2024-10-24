@@ -108,7 +108,7 @@ void lint_media_file(char *file_path, const void *_unused)
     g_atomic_int_inc(&files_scanned);
 
     int subtitle_count = 0;
-    for (int i = 0; i < ifmt_ctx->nb_streams; i++)
+    for (unsigned int i = 0; i < ifmt_ctx->nb_streams; i++)
     {
         AVStream *stream = ifmt_ctx->streams[i];
         AVCodecParameters *codecpar = stream->codecpar;

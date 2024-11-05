@@ -28,6 +28,15 @@ make
 
 # Run
 bin/medialint <dir>
+...
+/youtube/demo.mkv: Subtitles/Presence: No subtitles found.
+/youtube/demo.mkv: Video/Bitrate: 0.29 Mibps [track 0].
+/youtube/demo.mkv: Video/Resolution: 450x360 [track 0].
+Time:      0.01 seconds
+Total:     3
+Processed: 3
+Errors:    1
+
 ```
 
 ## Constraints

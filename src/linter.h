@@ -12,4 +12,10 @@ typedef enum LinterClass
     CLASS_VIDEO_RESOLUTION
 } LinterClass;
 
+/**
+ * Get the name of a linter class.
+ * 
+ * @param class_id The linter class.
+ * @return A static string with the name of the class, never NULL.
+ */
 const char *linter_class_name(LinterClass class_id);

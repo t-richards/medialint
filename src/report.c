@@ -1,19 +1,18 @@
 #include <stdio.h>
+#include "linter.h"
 #include "report.h"
 
 typedef struct Report
 {
-    char *report_class;
-    char *report_message;
+    LinterClass class_id;
+    char *message;
 } Report;
-
 
 // Each report has copied strings.
 void report_free(gpointer data)
 {
     struct Report *report = data;
-    g_free(report->report_class);
-    g_free(report->report_message);
+    g_free(report->message);
     g_free(report);
 }
 
@@ -39,11 +38,11 @@ void reporting_context_free(ReportingContext *ctx)
     g_free(ctx);
 }
 
-void reporting_context_add(ReportingContext *ctx, const char *path_key, const char *report_class, const char *report_message)
+void reporting_context_add(ReportingContext *ctx, const char *path_key, const LinterClass class_id, const char *report_message)
 {
     struct Report *report = g_new0(struct Report, 1);
-    report->report_class = g_strdup(report_class);
-    report->report_message = g_strdup(report_message);
+    report->class_id = class_id;
+    report->message = g_strdup(report_message);
 
     g_mutex_lock(&ctx->mutex);
 
@@ -67,7 +66,7 @@ void reporting_context_add(ReportingContext *ctx, const char *path_key, const ch
 
 gint report_compare(const Report *a, const Report *b, gpointer _user_data)
 {
-    return g_ascii_strcasecmp(a->report_class, b->report_class);
+    return a->class_id - b->class_id;
 }
 
 int reporting_context_print(ReportingContext *ctx)
@@ -88,7 +87,8 @@ int reporting_context_print(ReportingContext *ctx)
         for (GList *report = report_queue->head; report != NULL; report = report->next)
         {
             struct Report *r = report->data;
-            printf("%s: %s: %s\n", path_key, r->report_class, r->report_message);
+            const char *class_name = linter_class_name(r->class_id);
+            printf("%s: %s: %s\n", path_key, class_name, r->message);
         }
     }
 

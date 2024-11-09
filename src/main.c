@@ -11,6 +11,7 @@
 #include <glib.h>
 #include <libavformat/avformat.h>
 
+#include "linter.h"
 #include "report.h"
 
 int total_files = 0;
@@ -35,16 +36,6 @@ const int MIN_BIT_RATE = 2 * MEBIBIT;
 
 // The minimum frame size for a video that we're willing to tolerate.
 const int MIN_PIXEL_COUNT = 1280 * 720;
-
-// Linter class names.
-const char *CLASS_FORMAT_UNSUPPORTED = "Format/Unsupported";
-const char *CLASS_NAMING_FORBIDDEN = "Naming/Forbidden";
-const char *CLASS_NAMING_MOVIE = "Naming/Movie";
-const char *CLASS_NAMING_TV = "Naming/TV";
-const char *CLASS_SUBTITLES_PRESENCE = "Subtitles/Presence";
-const char *CLASS_VIDEO_BITRATE = "Video/Bitrate";
-const char *CLASS_VIDEO_CODEC = "Video/Codec";
-const char *CLASS_VIDEO_RESOLUTION = "Video/Resolution";
 
 // Runs all linters on a single media file.
 void lint_media_file(char *file_path, const void *_unused)

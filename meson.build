@@ -11,7 +11,7 @@ libavformat_dep = dependency('libavformat', required: true)
 libavutil_dep = dependency('libavutil', required: true)
 
 # Sources
-sources = files('src/main.c', 'src/report.c')
+sources = files('src/main.c', 'src/report.c', 'src/linter.c')
 
 # Executable
 executable('medialint',

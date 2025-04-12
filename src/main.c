@@ -79,10 +79,24 @@ void lint_media_file(char *file_path, const void *_unused)
     g_strfreev(parts);
 
     AVFormatContext *ifmt_ctx = avformat_alloc_context();
+
+    // Attempt to speed up reading / decoding.
     ifmt_ctx->flags |= AVFMT_FLAG_NOBUFFER;
     ifmt_ctx->flags |= AVFMT_FLAG_NOFILLIN;
     ifmt_ctx->flags |= AVFMT_FLAG_NONBLOCK;
     ifmt_ctx->flags |= AVFMT_FLAG_NOPARSE;
+
+    // Require strict input format compliance.
+    ifmt_ctx->strict_std_compliance = FF_COMPLIANCE_VERY_STRICT;
+
+    // Blow up on decoding errors.
+    ifmt_ctx->error_recognition |= AV_EF_CRCCHECK;
+    ifmt_ctx->error_recognition |= AV_EF_BITSTREAM;
+    ifmt_ctx->error_recognition |= AV_EF_BUFFER;
+    ifmt_ctx->error_recognition |= AV_EF_EXPLODE;
+    ifmt_ctx->error_recognition |= AV_EF_CAREFUL;
+    ifmt_ctx->error_recognition |= AV_EF_COMPLIANT;
+    ifmt_ctx->error_recognition |= AV_EF_AGGRESSIVE;
 
     int ret = avformat_open_input(&ifmt_ctx, file_path, NULL, NULL);
     if (ret < 0)

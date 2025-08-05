@@ -80,12 +80,6 @@ void lint_media_file(char *file_path, const void *_unused)
 
     AVFormatContext *ifmt_ctx = avformat_alloc_context();
 
-    // Attempt to speed up reading / decoding.
-    ifmt_ctx->flags |= AVFMT_FLAG_NOBUFFER;
-    ifmt_ctx->flags |= AVFMT_FLAG_NOFILLIN;
-    ifmt_ctx->flags |= AVFMT_FLAG_NONBLOCK;
-    ifmt_ctx->flags |= AVFMT_FLAG_NOPARSE;
-
     // Require strict input format compliance.
     ifmt_ctx->strict_std_compliance = FF_COMPLIANCE_VERY_STRICT;
 

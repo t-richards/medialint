@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
+#include <string.h>
 
 #include <errno.h>
 #include <ftw.h>
@@ -152,8 +153,24 @@ void lint_media_file(char *file_path, const void *_unused)
         }
         else if (codecpar->codec_type == AVMEDIA_TYPE_SUBTITLE)
         {
-            // Count subtitles.
             subtitle_count++;
+
+            // Check that default/forced subtitles are in English.
+            if (stream->disposition & (AV_DISPOSITION_DEFAULT | AV_DISPOSITION_FORCED))
+            {
+                AVDictionaryEntry *lang = av_dict_get(stream->metadata, "language", NULL, 0);
+                const char *lang_str = lang ? lang->value : "unknown";
+                bool is_english = lang && (strcmp(lang->value, "eng") == 0 || strcmp(lang->value, "en") == 0);
+
+                if (!is_english)
+                {
+                    char report_message[128] = {0};
+                    snprintf(report_message, 128, "%s [track %d, %s].",
+                             (stream->disposition & AV_DISPOSITION_FORCED) ? "forced" : "default",
+                             i, lang_str);
+                    reporting_context_add(reporting_context, file_path, CLASS_SUBTITLES_LANGUAGE, report_message);
+                }
+            }
         }
     }
 

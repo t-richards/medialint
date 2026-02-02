@@ -6,7 +6,7 @@ It checks for the following issues:
 
  - preferred container / codecs / quality
  - incorrect file naming / structure
- - missing subtitles
+ - missing subtitles / preferred default subtitle language
 
 ## Features
 

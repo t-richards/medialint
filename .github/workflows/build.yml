@@ -19,13 +19,13 @@ jobs:
           sudo apt-get install -y libavcodec-dev libavformat-dev libavutil-dev libglib2.0-dev clang-tools
 
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Build with scan-build
         run: scan-build make dist
 
       - name: Upload binary
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: medialint
           path: bin/medialint

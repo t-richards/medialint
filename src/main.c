@@ -183,16 +183,13 @@ void lint_media_file(char *file_path, const void *_unused)
     avformat_close_input(&ifmt_ctx);
 }
 
-int nftw_callback(const char *fpath, const struct stat *sb,
-                  int tflag, struct FTW *ftwbuf)
+int nftw_callback(const char *fpath, const struct stat *,
+                  int tflag, struct FTW *)
 {
-    switch (tflag)
-    {
-    case FTW_F:
+    if (tflag == FTW_F) {
         total_files++;
         char *fpath_copy = strdup(fpath); // This will be freed by the thread.
         g_thread_pool_push(pool, (gpointer)fpath_copy, NULL);
-        break;
     }
 
     return 0;

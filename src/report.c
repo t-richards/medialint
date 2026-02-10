@@ -47,7 +47,7 @@ void reporting_context_add(ReportingContext *ctx, const char *path_key, const Li
     g_mutex_lock(&ctx->mutex);
 
     // First, check if the key already exists.
-    gpointer report_queue = g_hash_table_lookup(ctx->reports, path_key);
+    GQueue *report_queue = g_hash_table_lookup(ctx->reports, path_key);
     if (report_queue != NULL)
     {
         // The key already has a report queue. Append the new report to it.
@@ -56,7 +56,7 @@ void reporting_context_add(ReportingContext *ctx, const char *path_key, const Li
     else
     {
         // The key does not exist. Insert a new queue with the report.
-        GQueue *report_queue = g_queue_new();
+        report_queue = g_queue_new();
         g_queue_push_tail(report_queue, report);
         g_hash_table_insert(ctx->reports, g_strdup(path_key), report_queue);
     }
@@ -64,7 +64,7 @@ void reporting_context_add(ReportingContext *ctx, const char *path_key, const Li
     g_mutex_unlock(&ctx->mutex);
 }
 
-gint report_compare(const Report *a, const Report *b, gpointer _user_data)
+gint report_compare(const Report *a, const Report *b, gpointer)
 {
     return a->class_id - b->class_id;
 }

@@ -45,8 +45,8 @@ Errors:    1
 
   `medialint` currently only supports running on Unix-like platforms. The following set of things must be addressed before it works on other platforms.
 
-  - [ ] Replace `nftw` with something more portable.
-  - [ ] Figure out how to cross-compile GLib for other platforms.
+  - [x] Replace `nftw` with something more portable.
+  - [ ] Figure out a cross-platform compile setup.
 
 ## License
 

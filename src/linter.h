@@ -6,6 +6,7 @@ typedef enum LinterClass
     CLASS_NAMING_FORBIDDEN,
     CLASS_NAMING_MOVIE,
     CLASS_NAMING_TV,
+    CLASS_AUDIO_LANGUAGE,
     CLASS_SUBTITLES_LANGUAGE,
     CLASS_SUBTITLES_PRESENCE,
     CLASS_VIDEO_BITRATE,
@@ -15,7 +16,7 @@ typedef enum LinterClass
 
 /**
  * Get the name of a linter class.
- * 
+ *
  * @param class_id The linter class.
  * @return A static string with the name of the class, never NULL.
  */

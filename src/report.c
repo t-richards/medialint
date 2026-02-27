@@ -1,6 +1,6 @@
-#include <stdio.h>
-#include "linter.h"
 #include "report.h"
+#include "linter.h"
+#include <stdio.h>
 
 typedef struct Report
 {
@@ -38,7 +38,8 @@ void reporting_context_free(ReportingContext *ctx)
     g_free(ctx);
 }
 
-void reporting_context_add(ReportingContext *ctx, const char *path_key, const LinterClass class_id, const char *report_message)
+void reporting_context_add(ReportingContext *ctx, const char *path_key, const LinterClass class_id,
+                           const char *report_message)
 {
     struct Report *report = g_new0(struct Report, 1);
     report->class_id = class_id;

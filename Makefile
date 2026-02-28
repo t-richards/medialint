@@ -1,4 +1,4 @@
-CFLAGS=-Wall -Werror -g -O3 $(shell pkg-config --cflags libavcodec libavformat libavutil glib-2.0 gio-2.0)
+override CFLAGS += -Wall -Werror -g -O3 $(shell pkg-config --cflags libavcodec libavformat libavutil glib-2.0 gio-2.0)
 LDFLAGS=$(shell pkg-config --libs libavcodec libavformat libavutil glib-2.0 gio-2.0)
 
 bin/medialint: src/*.c

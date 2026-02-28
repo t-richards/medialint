@@ -29,7 +29,6 @@ jobs:
         with:
           name: medialint-linux-x86_64
           path: bin/medialint
-          archive: false
           retention-days: 14
 
   macos:
@@ -53,7 +52,6 @@ jobs:
         with:
           name: medialint-macos-arm64
           path: bin/medialint
-          archive: false
           retention-days: 14
 
   windows:
@@ -67,7 +65,7 @@ jobs:
         uses: actions/checkout@v6
 
       - name: Set up MSYS2
-        uses: msys2/setup-msys2@v2
+        uses: msys2/setup-msys2@4f806de0a5a7294ffabaff804b38a9b435a73bda # v.2.30.0
         with:
           msystem: MINGW64
           update: true
@@ -78,17 +76,16 @@ jobs:
             mingw-w64-x86_64-pkg-config
             make
 
-      - name: Build (static)
+      - name: Build
         shell: msys2 {0}
         run: |
-          STATIC_LDFLAGS=$(pkg-config --static --libs libavcodec libavformat libavutil glib-2.0 gio-2.0)
-          make LDFLAGS="-static -static-libgcc $STATIC_LDFLAGS"
+          make
           strip bin/medialint.exe
+          ldd bin/medialint.exe | grep '/mingw64/' | awk '{print $3}' | xargs -I{} cp {} bin/
 
       - name: Upload binary
         uses: actions/upload-artifact@v7
         with:
           name: medialint-windows-x86_64
-          path: bin/medialint.exe
-          archive: false
+          path: bin/
           retention-days: 14

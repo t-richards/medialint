@@ -70,10 +70,10 @@ jobs:
           msystem: UCRT64
           update: true
           install: >-
-            mingw-w64-x86_64-gcc
-            mingw-w64-x86_64-ffmpeg
-            mingw-w64-x86_64-glib2
-            mingw-w64-x86_64-pkg-config
+            mingw-w64-ucrt-x86_64-gcc
+            mingw-w64-ucrt-x86_64-ffmpeg
+            mingw-w64-ucrt-x86_64-glib2
+            mingw-w64-ucrt-x86_64-pkg-config
             make
 
       - name: Build
@@ -81,7 +81,7 @@ jobs:
         run: |
           make
           strip bin/medialint.exe
-          ldd bin/medialint.exe | grep '/mingw64/' | awk '{print $3}' | xargs -I{} cp {} bin/
+          ldd bin/medialint.exe | grep '/ucrt64/' | awk '{print $3}' | xargs -I{} cp {} bin/
 
       - name: Upload binary
         uses: actions/upload-artifact@v7

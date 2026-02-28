@@ -147,7 +147,7 @@ static void lint_subtitle_presence(const MediaSummary *summary, const char *path
 static void lint_path(const char *path, LinterState *state)
 {
     // Check for forbidden characters in the file path.
-    char **parts = g_strsplit(path, G_DIR_SEPARATOR_S, 0);
+    char **parts = g_strsplit_set(path, "/\\", 0);
     for (int i = 0; parts[i] != NULL; i++)
     {
         if (g_regex_match(state->forbidden_chars_regex, parts[i], 0, NULL))

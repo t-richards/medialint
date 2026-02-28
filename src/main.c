@@ -81,7 +81,7 @@ void init()
 
     // Create regular expressions.
     GRegexCompileFlags flags = G_REGEX_CASELESS | G_REGEX_OPTIMIZE;
-    state.forbidden_chars_regex = g_regex_new("[<>:\"/\\|?*]", flags, 0, NULL);
+    state.forbidden_chars_regex = g_regex_new("[<>:\"|?*]", flags, 0, NULL);
     state.movie_year_regex = g_regex_new("\\(\\d{4}\\)", flags, 0, NULL);
     state.tv_naming_regex = g_regex_new("S\\d{2}E\\d{2}", flags, 0, NULL);
 

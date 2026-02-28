@@ -6,27 +6,89 @@ on:
       - main
 
 jobs:
-  clang:
-    name: Clang
+  linux:
+    name: Linux
     runs-on: ubuntu-24.04
     permissions:
       contents: write
 
     steps:
-      - name: Install system deps
+      - name: Checkout code
+        uses: actions/checkout@v6
+
+      - name: Install deps
         run: |
           sudo apt-get update
           sudo apt-get install -y libavcodec-dev libavformat-dev libavutil-dev libglib2.0-dev clang-tools
-
-      - name: Checkout code
-        uses: actions/checkout@v6
 
       - name: Build with scan-build
         run: scan-build make dist
 
       - name: Upload binary
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         with:
-          name: medialint
+          name: medialint-linux-x86_64
           path: bin/medialint
+          archive: false
+          retention-days: 14
+
+  macos:
+    name: macOS
+    runs-on: macos-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+
+      - name: Install deps
+        run: brew install ffmpeg glib pkg-config
+
+      - name: Build
+        run: make dist
+
+      - name: Upload binary
+        uses: actions/upload-artifact@v7
+        with:
+          name: medialint-macos-arm64
+          path: bin/medialint
+          archive: false
+          retention-days: 14
+
+  windows:
+    name: Windows
+    runs-on: windows-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+
+      - name: Set up MSYS2
+        uses: msys2/setup-msys2@v2
+        with:
+          msystem: MINGW64
+          update: true
+          install: >-
+            mingw-w64-x86_64-gcc
+            mingw-w64-x86_64-ffmpeg
+            mingw-w64-x86_64-glib2
+            mingw-w64-x86_64-pkg-config
+            make
+
+      - name: Build (static)
+        shell: msys2 {0}
+        run: |
+          STATIC_LDFLAGS=$(pkg-config --static --libs libavcodec libavformat libavutil glib-2.0 gio-2.0)
+          make LDFLAGS="-static -static-libgcc $STATIC_LDFLAGS"
+          strip bin/medialint.exe
+
+      - name: Upload binary
+        uses: actions/upload-artifact@v7
+        with:
+          name: medialint-windows-x86_64
+          path: bin/medialint.exe
+          archive: false
           retention-days: 14

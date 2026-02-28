@@ -147,7 +147,7 @@ static void lint_subtitle_presence(const MediaSummary *summary, const char *path
 static void lint_path(const char *path, LinterState *state)
 {
     // Check for forbidden characters in the file path.
-    char **parts = g_strsplit(path, "/", 0);
+    char **parts = g_strsplit(path, G_DIR_SEPARATOR_S, 0);
     for (int i = 0; parts[i] != NULL; i++)
     {
         if (g_regex_match(state->forbidden_chars_regex, parts[i], 0, NULL))
@@ -163,14 +163,18 @@ static void lint_path(const char *path, LinterState *state)
     if (g_str_match_string("movies", path, TRUE))
     {
         if (!g_regex_match(state->movie_year_regex, path, 0, NULL))
+        {
             reporting_context_add(state->reporting_context, path, CLASS_NAMING_MOVIE,
                                   "Movie year does not match (0000).");
+        }
     }
     // TV files should have a season and episode in the file name.
     else if (g_str_match_string("tv", path, TRUE))
     {
         if (!g_regex_match(state->tv_naming_regex, path, 0, NULL))
+        {
             reporting_context_add(state->reporting_context, path, CLASS_NAMING_TV, "TV episode does not match S00E00.");
+        }
     }
 }
 

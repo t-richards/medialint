@@ -141,4 +141,6 @@ int main(int argc, char *argv[])
     printf("Errors:    %d\n", report_file_count);
 
     cleanup();
+
+    return report_file_count > 0 ? EXIT_FAILURE : EXIT_SUCCESS;
 }

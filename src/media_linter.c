@@ -32,6 +32,12 @@ typedef struct
     bool has_english_subtitle;
 } MediaSummary;
 
+static const char *stream_language(AVStream *stream)
+{
+    AVDictionaryEntry *lang = av_dict_get(stream->metadata, "language", NULL, 0);
+    return lang ? lang->value : NULL;
+}
+
 static bool is_english(const char *lang)
 {
     return lang && (strcmp(lang, "eng") == 0 || strcmp(lang, "en") == 0);
@@ -87,8 +93,7 @@ static void probe_streams(AVFormatContext *ctx, MediaSummary *summary, const cha
             if (summary->audio_count == 0)
             {
                 summary->first_audio_idx = i;
-                AVDictionaryEntry *lang = av_dict_get(stream->metadata, "language", NULL, 0);
-                summary->first_audio_lang = lang ? lang->value : NULL;
+                summary->first_audio_lang = stream_language(stream);
             }
             summary->audio_count++;
         }
@@ -97,19 +102,19 @@ static void probe_streams(AVFormatContext *ctx, MediaSummary *summary, const cha
             summary->subtitle_count++;
 
             // Track whether any subtitle track is English.
-            AVDictionaryEntry *lang = av_dict_get(stream->metadata, "language", NULL, 0);
-            if (is_english(lang ? lang->value : NULL))
+            const char *lang = stream_language(stream);
+            if (is_english(lang)) {
                 summary->has_english_subtitle = true;
+            }
 
             // Check that default/forced subtitles are in English.
             if (stream->disposition & (AV_DISPOSITION_DEFAULT | AV_DISPOSITION_FORCED))
             {
-                const char *lang_str = lang ? lang->value : "unknown";
-                if (!is_english(lang_str))
+                if (!is_english(lang))
                 {
                     char msg[128] = {0};
                     snprintf(msg, 128, "%s [track %d, %s].",
-                             (stream->disposition & AV_DISPOSITION_FORCED) ? "forced" : "default", i, lang_str);
+                             (stream->disposition & AV_DISPOSITION_FORCED) ? "forced" : "default", i, lang ? lang : "unknown");
                     reporting_context_add(state->reporting_context, path, CLASS_SUBTITLES_LANGUAGE, msg);
                 }
             }

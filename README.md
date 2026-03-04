@@ -39,14 +39,13 @@ Errors:    1
 
 ```
 
-## Constraints
+## Downloads
 
-- Platform limitations:
+For now, compiled binaries are available as build artifacts from the `build` workflow:
 
-  `medialint` currently only supports running on Unix-like platforms. The following set of things must be addressed before it works on other platforms.
+https://github.com/t-richards/medialint/actions/workflows/build.yml
 
-  - [x] Replace `nftw` with something more portable.
-  - [ ] Figure out a cross-platform compile setup.
+Select the most recent run at the top of the list, then scroll down to the "artifacts" section. In the future, we may choose to promote these build artifacts as a proper release.
 
 ## License
 

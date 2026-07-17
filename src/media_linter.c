@@ -103,18 +103,18 @@ static void probe_streams(AVFormatContext *ctx, MediaSummary *summary, const cha
 
             // Track whether any subtitle track is English.
             const char *lang = stream_language(stream);
-            if (is_english(lang)) {
+            if (is_english(lang))
+            {
                 summary->has_english_subtitle = true;
             }
 
-            // Check that default/forced subtitles are in English.
-            if (stream->disposition & (AV_DISPOSITION_DEFAULT | AV_DISPOSITION_FORCED))
+            // Check that default subtitles are english.
+            if (stream->disposition & AV_DISPOSITION_DEFAULT)
             {
                 if (!is_english(lang))
                 {
                     char msg[128] = {0};
-                    snprintf(msg, 128, "%s [track %d, %s].",
-                             (stream->disposition & AV_DISPOSITION_FORCED) ? "forced" : "default", i, lang ? lang : "unknown");
+                    snprintf(msg, 128, "%s [track %d, %s].", "default", i, lang ? lang : "unknown");
                     reporting_context_add(state->reporting_context, path, CLASS_SUBTITLES_LANGUAGE, msg);
                 }
             }

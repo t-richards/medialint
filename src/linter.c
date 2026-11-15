@@ -14,6 +14,8 @@ const char *linter_class_name(LinterClass class_id)
         return "Naming/TV";
     case CLASS_AUDIO_LANGUAGE:
         return "Audio/Language";
+    case CLASS_SUBTITLES_FORMAT:
+        return "Subtitles/Format";
     case CLASS_SUBTITLES_LANGUAGE:
         return "Subtitles/Language";
     case CLASS_SUBTITLES_PRESENCE:

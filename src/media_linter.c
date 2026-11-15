@@ -29,6 +29,7 @@ typedef struct
 
     // Subtitles
     int subtitle_count;
+    int pgs_subtitle_count;
     bool has_english_subtitle;
 } MediaSummary;
 
@@ -58,7 +59,7 @@ static void probe_streams(AVFormatContext *ctx, MediaSummary *summary, const cha
             if (codecpar->bit_rate != 0 && codecpar->bit_rate <= MIN_BIT_RATE)
             {
                 char msg[128] = {0};
-                snprintf(msg, 128, "%.2f Mibps [track %d].", codecpar->bit_rate / (float)MEBIBIT, i);
+                snprintf(msg, sizeof(msg), "%.2f Mibps [track %d].", codecpar->bit_rate / (float)MEBIBIT, i);
                 reporting_context_add(state->reporting_context, path, CLASS_VIDEO_BITRATE, msg);
             }
 
@@ -67,7 +68,7 @@ static void probe_streams(AVFormatContext *ctx, MediaSummary *summary, const cha
             if (pixel_count <= MIN_PIXEL_COUNT)
             {
                 char msg[128] = {0};
-                snprintf(msg, 128, "%dx%d [track %d].", codecpar->width, codecpar->height, i);
+                snprintf(msg, sizeof(msg), "%dx%d [track %d].", codecpar->width, codecpar->height, i);
                 reporting_context_add(state->reporting_context, path, CLASS_VIDEO_RESOLUTION, msg);
             }
 
@@ -83,7 +84,7 @@ static void probe_streams(AVFormatContext *ctx, MediaSummary *summary, const cha
 
             default: {
                 char msg[128] = {0};
-                snprintf(msg, 128, "%s [track %d].", avcodec_get_name(codecpar->codec_id), i);
+                snprintf(msg, sizeof(msg), "%s [track %d].", avcodec_get_name(codecpar->codec_id), i);
                 reporting_context_add(state->reporting_context, path, CLASS_VIDEO_CODEC, msg);
             }
             }
@@ -100,6 +101,10 @@ static void probe_streams(AVFormatContext *ctx, MediaSummary *summary, const cha
         else if (codecpar->codec_type == AVMEDIA_TYPE_SUBTITLE)
         {
             summary->subtitle_count++;
+            if (codecpar->codec_id == AV_CODEC_ID_HDMV_PGS_SUBTITLE)
+            {
+                summary->pgs_subtitle_count++;
+            }
 
             // Track whether any subtitle track is English.
             const char *lang = stream_language(stream);
@@ -114,7 +119,7 @@ static void probe_streams(AVFormatContext *ctx, MediaSummary *summary, const cha
                 if (!is_english(lang))
                 {
                     char msg[128] = {0};
-                    snprintf(msg, 128, "%s [track %d, %s].", "default", i, lang ? lang : "unknown");
+                    snprintf(msg, sizeof(msg), "%s [track %d, %s].", "default", i, lang ? lang : "unknown");
                     reporting_context_add(state->reporting_context, path, CLASS_SUBTITLES_LANGUAGE, msg);
                 }
             }
@@ -136,7 +141,7 @@ static void lint_audio_language(const MediaSummary *summary, const char *path, L
     if (!exempt)
     {
         char msg[128] = {0};
-        snprintf(msg, 128, "first audio track is not English [track %d, %s].", summary->first_audio_idx, lang);
+        snprintf(msg, sizeof(msg), "first audio track is not English [track %d, %s].", summary->first_audio_idx, lang);
         reporting_context_add(state->reporting_context, path, CLASS_AUDIO_LANGUAGE, msg);
     }
 }
@@ -146,6 +151,15 @@ static void lint_subtitle_presence(const MediaSummary *summary, const char *path
     if (summary->subtitle_count < 1)
     {
         reporting_context_add(state->reporting_context, path, CLASS_SUBTITLES_PRESENCE, "No subtitles found.");
+    }
+}
+
+// PGS subtitles are bitmap-based, so Plex has to burn them in, forcing a video transcode.
+static void lint_subtitle_format(const MediaSummary *summary, const char *path, LinterState *state)
+{
+    if (summary->subtitle_count > 0 && summary->pgs_subtitle_count == summary->subtitle_count)
+    {
+        reporting_context_add(state->reporting_context, path, CLASS_SUBTITLES_FORMAT, "Only PGS subtitles found.");
     }
 }
 
@@ -209,7 +223,7 @@ void lint_media_file(char *file_path, LinterState *state)
     if (ret < 0)
     {
         char errbuf[AV_ERROR_MAX_STRING_SIZE] = {0};
-        av_strerror(ret, errbuf, AV_ERROR_MAX_STRING_SIZE);
+        av_strerror(ret, errbuf, sizeof(errbuf));
         reporting_context_add(state->reporting_context, file_path, CLASS_FORMAT_UNSUPPORTED, errbuf);
 
         g_free(file_path);
@@ -224,6 +238,7 @@ void lint_media_file(char *file_path, LinterState *state)
 
     lint_audio_language(&summary, file_path, state);
     lint_subtitle_presence(&summary, file_path, state);
+    lint_subtitle_format(&summary, file_path, state);
 
     g_free(file_path);
     avformat_close_input(&ifmt_ctx);

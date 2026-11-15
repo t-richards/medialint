@@ -1,4 +1,5 @@
-override CFLAGS += -Wall -Werror -g -O3 $(shell pkg-config --cflags libavcodec libavformat libavutil glib-2.0 gio-2.0)
+override CC = clang
+override CFLAGS += -fsanitize=bounds -fsanitize-trap=bounds -fcf-protection=full -fsanitize=safe-stack -fstack-clash-protection -std=c23 -Wl,-z,relro,-z,now -Wall -Werror -g -O3 -D_FORTIFY_SOURCE=3 $(shell pkg-config --cflags libavcodec libavformat libavutil glib-2.0 gio-2.0)
 override LDFLAGS += $(shell pkg-config --libs libavcodec libavformat libavutil glib-2.0 gio-2.0)
 
 bin/medialint: src/*.c
